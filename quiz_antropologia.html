@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examen Tipo Test · Tema 5: Antropología</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF9F5;--surface:#FFFFFF;--surface2:#F0EDE6;--surface3:#E5E0D5;
+  --text:#2D2B26;--text-muted:#8C8579;--border:#DDD6C8;
+  --accent:#D97757;--accent-dark:#B85B3F;--accent-soft:rgba(217,119,87,.08);
+  --gold:#B7791F;--gold-bg:rgba(183,121,31,.08);
+  --correct:#2F7D5B;--correct-bg:rgba(47,125,91,.1);
+  --wrong:#C53030;--wrong-bg:rgba(197,48,48,.1);
+  --info:#2B6CB0;--info-bg:rgba(43,108,176,.08);
+  --radius:12px;--shadow:0 1px 4px rgba(0,0,0,.06)
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;font-size:16px}
+.app{max-width:820px;margin:0 auto;padding:1.5rem 1rem 3rem}
+.header{text-align:center;padding:2rem 0 1.8rem;border-bottom:1px solid var(--border);margin-bottom:2rem}
+.phi{display:inline-block;font-family:'Instrument Serif',serif;font-size:2.4rem;color:var(--accent);line-height:1;margin-bottom:.4rem}
+.header h1{font-family:'Instrument Serif',serif;font-size:clamp(1.8rem,4.5vw,2.6rem);font-weight:400;line-height:1.15;margin-bottom:.4rem}
+.header p{color:var(--text-muted);font-size:.92rem;font-weight:400}
+.header .ornament{color:var(--accent);font-size:1rem;margin:.5rem 0;letter-spacing:.5em}
+
+.login-screen{max-width:480px;margin:0 auto;text-align:center}
+.login-screen h2{font-family:'Instrument Serif',serif;font-size:1.8rem;font-weight:400;margin-bottom:.5rem}
+.login-screen>p{color:var(--text-muted);font-size:.92rem;margin-bottom:1.6rem}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem 1.8rem;text-align:left;box-shadow:var(--shadow)}
+.login-toggle{display:flex;border-radius:10px;background:var(--surface2);padding:4px;margin-bottom:1.5rem;gap:4px}
+.toggle-btn{flex:1;padding:.6rem;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;background:transparent;color:var(--text-muted);transition:all .2s}
+.toggle-btn.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);margin-bottom:.4rem}
+.field input,.field select{width:100%;padding:.78rem 1rem;background:var(--surface2);border:2px solid transparent;border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.95rem;transition:border-color .2s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent)}
+.field input::placeholder{color:var(--text-muted);opacity:.5}
+.field .hint{font-size:.73rem;color:var(--text-muted);margin-top:.3rem}
+.field .error-msg{font-size:.8rem;color:var(--wrong);margin-top:.3rem;display:none}
+
+.login-btn{width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s;margin-top:.3rem}
+.login-btn:hover{background:var(--accent-dark)}
+
+.progress-wrap{background:var(--surface2);border-radius:20px;height:8px;margin:1rem 0;overflow:hidden}
+.progress-bar{height:100%;border-radius:20px;background:var(--accent);transition:width .5s ease}
+.progress-info{display:flex;justify-content:space-between;font-size:.82rem;color:var(--text-muted);margin-bottom:1.2rem}
+
+.student-tag{display:inline-flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);padding:.35rem .85rem;border-radius:20px;font-size:.78rem;color:var(--text-muted);margin-bottom:.5rem}
+.student-tag .dot{width:6px;height:6px;background:var(--correct);border-radius:50%}
+
+.question-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem 1.8rem;box-shadow:var(--shadow);animation:fadeIn .4s ease;border-left:3px solid var(--accent)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.q-type{display:inline-block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:.3rem .85rem;border-radius:20px;margin-bottom:1rem;background:var(--accent-soft);color:var(--accent-dark)}
+.q-text{font-family:'Instrument Serif',serif;font-size:1.35rem;font-weight:400;line-height:1.35;margin-bottom:1.5rem}
+
+.options{display:flex;flex-direction:column;gap:.55rem}
+.option-btn{background:var(--surface2);border:2px solid transparent;border-radius:10px;padding:.9rem 1.1rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.94rem;cursor:pointer;text-align:left;transition:all .2s;display:flex;align-items:center;gap:.8rem}
+.option-btn:hover:not(.disabled){border-color:var(--border);background:var(--surface3)}
+.option-btn .letter{flex-shrink:0;width:30px;height:30px;border-radius:7px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;font-family:'Instrument Serif',serif}
+.option-btn .opt-text{flex:1;line-height:1.4}
+.option-btn.correct{border-color:var(--correct);background:var(--correct-bg)}
+.option-btn.correct .letter{background:var(--correct);color:#fff}
+.option-btn.wrong{border-color:var(--wrong);background:var(--wrong-bg)}
+.option-btn.wrong .letter{background:var(--wrong);color:#fff}
+.option-btn.disabled{cursor:default}
+.option-btn.disabled:not(.correct):not(.wrong){opacity:.55}
+
+.feedback{margin-top:1.1rem;padding:.95rem 1.1rem;border-radius:10px;font-size:.9rem;line-height:1.5;animation:fadeIn .3s ease}
+.feedback.fb-correct{background:var(--correct-bg);border-left:3px solid var(--correct)}
+.feedback.fb-wrong{background:var(--wrong-bg);border-left:3px solid var(--wrong)}
+.feedback strong{display:block;margin-bottom:.25rem;font-weight:700}
+
+.next-btn{display:none;margin-top:1.2rem;width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .2s}
+.next-btn:hover{background:var(--accent-dark)}
+
+.results{text-align:center;animation:fadeIn .5s ease}
+.results h2{font-family:'Instrument Serif',serif;font-size:2rem;font-weight:400;margin-bottom:.4rem}
+.score-circle{width:160px;height:160px;border-radius:50%;margin:1.3rem auto;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid var(--correct);background:var(--surface)}
+.score-circle .big{font-family:'Instrument Serif',serif;font-size:3rem;line-height:1;font-weight:400}
+.score-circle .label{font-size:.74rem;color:var(--text-muted);margin-top:.2rem;letter-spacing:1px;text-transform:uppercase}
+.results-grade{font-family:'Instrument Serif',serif;font-size:1.4rem;font-weight:400}
+.results-details{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin:1.4rem 0}
+.result-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.8rem .5rem;box-shadow:var(--shadow)}
+.result-stat .num{font-family:'Instrument Serif',serif;font-size:1.7rem;font-weight:400;line-height:1}
+.result-stat .lbl{font-size:.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-top:.3rem}
+
+.restart-btn{margin-top:1.2rem;padding:.7rem 2rem;border:2px solid var(--border);border-radius:10px;background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;transition:all .2s}
+.restart-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.sync-status{margin-top:.8rem;padding:.65rem 1.1rem;border-radius:8px;font-size:.84rem;font-weight:500;display:inline-block}
+.sync-ok{background:var(--correct-bg);color:var(--correct)}
+.sync-fail{background:var(--wrong-bg);color:var(--wrong)}
+.sync-pending{background:var(--gold-bg);color:var(--gold)}
+
+.ranking-section{margin-top:2rem;text-align:left;animation:fadeIn .4s ease}
+.ranking-section h3{font-family:'Instrument Serif',serif;font-size:1.5rem;font-weight:400;margin-bottom:.6rem;text-align:center}
+.ranking-section .panel-sub{text-align:center;font-size:.88rem;color:var(--text-muted);margin-bottom:1rem}
+.ranking-table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.ranking-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.ranking-table th{background:var(--surface2);padding:.75rem .85rem;text-align:left;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);border-bottom:2px solid var(--border)}
+.ranking-table td{padding:.7rem .85rem;border-bottom:1px solid var(--surface2)}
+.ranking-table tr:last-child td{border-bottom:none}
+.ranking-table .rank-pos{font-weight:700;color:var(--accent);width:32px;text-align:center;font-family:'Instrument Serif',serif;font-size:1rem}
+.ranking-table .rank-score{font-weight:700}
+.rank-gold{color:#B7791F}
+.rank-silver{color:#718096}
+.rank-bronze{color:#C05621}
+
+.excel-btn{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;padding:.75rem 1.5rem;border:2px solid var(--correct);border-radius:10px;background:transparent;color:var(--correct);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}
+.excel-btn:hover{background:var(--correct);color:#fff}
+
+.review-section{margin-top:1.8rem;text-align:left}
+.review-section h3{font-family:'Instrument Serif',serif;font-size:1.4rem;font-weight:400;margin-bottom:.8rem;text-align:center}
+.review-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.05rem;margin-bottom:.5rem;border-left:3px solid var(--text-muted)}
+.review-item.rev-correct{border-left-color:var(--correct)}
+.review-item.rev-wrong{border-left-color:var(--wrong)}
+.review-item .rev-q{font-weight:600;font-size:.88rem;margin-bottom:.35rem;line-height:1.4}
+.review-item .rev-detail{font-size:.82rem;color:var(--text-muted);line-height:1.5}
+.review-item .rev-detail .ok{color:var(--correct);font-weight:600}
+.review-item .rev-detail .ko{color:var(--wrong);font-weight:600}
+.review-item .rev-detail .exp{display:block;margin-top:.3rem;color:var(--text);font-style:italic}
+
+.footer{text-align:center;margin-top:2.8rem;padding-top:1.5rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text-muted)}
+.footer .phi-small{font-family:'Instrument Serif',serif;color:var(--accent);font-size:1.2rem;display:block;margin-bottom:.3rem}
+
+@media(max-width:560px){
+  .question-card{padding:1.4rem 1.1rem}
+  .login-box{padding:1.5rem 1.2rem}
+  .results-details{grid-template-columns:repeat(2,1fr)}
+  .ranking-table{font-size:.78rem}
+  .ranking-table th,.ranking-table td{padding:.5rem .55rem}
+  .q-text{font-size:1.18rem}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+  <span class="phi">φ</span>
+  <h1>Tema 5 — Antropología</h1>
+  <div class="ornament">· · ·</div>
+  <p>Examen tipo test · 40 preguntas · 2º Bachillerato · IES Alquipir</p>
+</div>
+<div id="content"></div>
+<div class="footer">
+  <span class="phi-small">φ</span>
+  Filosofía · IES Alquipir · Cehegín
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  CONFIGURA AQUÍ TU URL DE GOOGLE APPS SCRIPT                ║
+// ║  Pega entre las comillas la URL que termina en /exec        ║
+// ╚══════════════════════════════════════════════════════════════╝
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzyfEIUuZxMhrD0kHpHMhz8zDnJOpfJX5kCTWRIjyv-L8pnstMqAVJH0EEx5zkc5aR6/exec';
+
+const TEACHER_PASS = 'ANTROPO2026';
+const STORAGE_KEY = 'quiz_antropologia_v1';
+
+// ═══════════════════════════════════════════════════════════════
+//  BANCO DE PREGUNTAS — TEMA 5: ANTROPOLOGÍA (páginas 1-13)
+// ═══════════════════════════════════════════════════════════════
+const Q = [
+  // ── INTRODUCCIÓN: ¿QUÉ ES LA ANTROPOLOGÍA? ──
+  {q:'¿Cuál es el objeto de estudio de la antropología?',
+   o:['Únicamente el cuerpo humano y sus enfermedades','El ser humano como realidad unitaria, integrando los conocimientos que aportan las distintas ciencias','Exclusivamente las costumbres y rituales sociales','Las leyes físicas que rigen el universo'],
+   c:1,e:'La antropología es la ciencia que se ocupa del estudio del ser humano, garantizando la unidad del ser frente a la fragmentación de las distintas ciencias.'},
+
+  {q:'¿Cuáles son las tres dimensiones que abarca el estudio antropológico?',
+   o:['Histórica, política y económica','Material, espiritual y divina','Biológica, sociocultural y filosófica','Pasada, presente y futura'],
+   c:2,e:'La antropología se divide en biológica (proceso de hominización), sociocultural (sistemas sociales y formas de conducta) y filosófica (interrogantes fundamentales del ser humano).'},
+
+  // ── TEORÍA DE LA EVOLUCIÓN: FASE 1 ──
+  {q:'¿Quién formuló la teoría del fijismo en el siglo XVIII?',
+   o:['Charles Darwin','Lamarck','Carl von Linneo','Aristóteles'],
+   c:2,e:'Linneo formuló el fijismo, que afirmaba que las especies vegetales y animales permanecen inalterables en el tiempo. Estaba fundamentado en Aristóteles y se conciliaba con el creacionismo.'},
+
+  {q:'El creacionismo, anterior al siglo XIX, sostiene que:',
+   o:['Las especies surgen por mutaciones genéticas aleatorias','Los seres vivos han sido creados por Dios a partir de la nada','La vida proviene de otros planetas','Los microorganismos se generan a partir de la materia en descomposición'],
+   c:1,e:'El creacionismo se basa en una lectura literal de la Biblia, según la cual los seres vivos fueron creados por Dios a partir de la nada. Su lectura, sin embargo, exige claves de comprensión simbólicas (exégesis bíblica).'},
+
+  // ── LAMARCK ──
+  {q:'Según Lamarck, los hábitos que un animal adopta para adaptarse al medio:',
+   o:['Se transfieren a la siguiente generación, y su acumulación puede dar lugar a nuevas especies','No tienen ningún efecto sobre la descendencia','Son determinados exclusivamente por el azar','Demuestran la inmutabilidad de las especies'],
+   c:0,e:'Lamarck defendía que los caracteres adquiridos durante la vida del organismo se heredan. La acumulación de cambios de generación en generación puede dar lugar a nuevas especies.'},
+
+  {q:'¿Por qué la teoría de Lamarck, aunque falsa, resultó revolucionaria en su día?',
+   o:['Porque demostraba la existencia de Dios mediante la naturaleza','Porque introducía la noción de gen','Porque situó el origen de los seres vivos en una causa natural (la adaptación al medio) y no en la intervención directa de Dios','Porque defendía el creacionismo de forma novedosa'],
+   c:2,e:'Lamarck supuso un giro decisivo: por primera vez se explicaba el origen de los seres vivos por una causa natural (la necesidad de adaptación), abriendo el camino al evolucionismo.'},
+
+  // ── DARWIN ──
+  {q:'Según la teoría de la selección natural de Darwin, el medio natural selecciona:',
+   o:['A los individuos más débiles para que mueran rápidamente','Especies completas, nunca individuos concretos','A los individuos al azar, sin criterio biológico','A los individuos mejor adaptados, que sobreviven más tiempo y tienen más descendencia'],
+   c:3,e:'En El origen de las especies, Darwin sostiene que ciertas variaciones biológicas posibilitan que sus poseedores sobrevivan más tiempo y dejen más descendencia, transmitiendo así esas características.'},
+
+  {q:'¿Cuál es el factor determinante que rige el proceso de selección natural según Darwin?',
+   o:['La voluntad de los individuos','La intervención divina','El azar','La inteligencia consciente de las especies'],
+   c:2,e:'Para Darwin, el factor determinante de la selección natural es el azar: las variaciones aparecen aleatoriamente y el medio "elige" cuáles sobreviven.'},
+
+  {q:'La metáfora del "árbol de la vida" en Darwin sugiere que:',
+   o:['Cada especie tiene un origen completamente independiente','Existe un antepasado común entre todos los organismos de la Tierra','Las especies son inmutables como un árbol estático','Los seres humanos descienden directamente de los chimpancés actuales'],
+   c:1,e:'Las formas más simples (como las bacterias) constituirían el tronco; a partir de ellas se han ramificado todas las especies. Existe un antepasado común para toda la vida.'},
+
+  // ── GENÉTICA ──
+  {q:'¿Qué demostró Mendel con sus experimentos sobre el cruzamiento de guisantes?',
+   o:['Que los caracteres adquiridos durante la vida se heredan','Que los progenitores transmiten a la descendencia pares de elementos hereditarios (genes), no sus características individuales','Que las especies son inmutables','Que los genes se encuentran en el citoplasma'],
+   c:1,e:'Mendel, considerado el padre de la genética, demostró que se transmiten pares de elementos hereditarios (hoy llamados genes) de forma independiente, no las características individuales completas.'},
+
+  {q:'¿Qué descubrió Morgan al aplicar rayos X a la mosca del vinagre?',
+   o:['Que las especies son inmutables','Que los caracteres adquiridos se heredan directamente','Que era posible provocar mutaciones sobre los genes, y que los genes se encuentran en los cromosomas','Que el ADN no existe'],
+   c:2,e:'Morgan obtuvo moscas con alas retorcidas, ojos de distinto color, etc., lo que demostraba que se podían provocar mutaciones en las unidades hereditarias (genes), y dedujo que estos se encuentran en los cromosomas.'},
+
+  {q:'La deriva genética, propuesta por Ernst Mayr, explica que:',
+   o:['Todas las nuevas especies se forman únicamente por selección natural','En poblaciones pequeñas y aisladas (por ejemplo, islas), el predominio de unos rasgos no se debe a la selección natural sino al azar','La evolución no existe realmente','Los caracteres adquiridos siempre se heredan'],
+   c:1,e:'Mayr propuso que en poblaciones pequeñas aisladas por barreras geográficas (como islas), nuevos rasgos pueden imponerse por puro azar y no por selección natural: a esto se llama deriva genética.'},
+
+  {q:'¿Qué defiende la teoría endosimbiótica de Lynn Margulis (1967)?',
+   o:['Que la evolución solo avanza por mutaciones aleatorias lentas','Que la aparición de una nueva especie se origina por la incorporación del genoma de un organismo por parte de otro','Que la selección natural es el único mecanismo evolutivo','Que las especies no pueden cooperar entre sí'],
+   c:1,e:'Para Margulis, los organismos al unirse por mutuo beneficio (endosimbiosis) generan cambios genéticos que pueden dar lugar a nuevas especies. La evolución avanzaría también "a saltos", no solo gradualmente.'},
+
+  // ── ORIGEN DE LA VIDA Y HOMINIZACIÓN ──
+  {q:'¿Qué se entiende por hominización o antropogénesis?',
+   o:['El estudio comparativo de los simios actuales','La creación divina del ser humano según el Génesis','El proceso de cambios morfológicos, fisiológicos, psicológicos y sociales que han conducido a la aparición de la especie humana','La teoría sobre las civilizaciones antiguas'],
+   c:2,e:'La antropogénesis es el conjunto de cambios promovidos por la evolución que han conducido al surgimiento del ser humano, distinguiéndolo de las demás especies.'},
+
+  {q:'¿Cuáles fueron las dos innovaciones evolutivas que iniciaron el proceso de hominización, siendo además la segunda determinante para la aparición del género Homo?',
+   o:['El uso del fuego y la agricultura','La bipedestación y la encefalización (aumento de la capacidad craneal)','La escritura y el lenguaje articulado','La domesticación de animales y la pintura rupestre'],
+   c:1,e:'La bipedestación se convirtió en el factor diferenciador de los homínidos respecto a otras especies, y la encefalización fue el factor determinante para la aparición del género Homo, que evolucionó desde el homo habilis hasta el Homo sapiens.'},
+
+  {q:'El Homo sapiens se caracteriza por una capacidad craneal de:',
+   o:['Menos de 800 cm³','Entre 800 y 1000 cm³','Más de 1300-1400 cm³, junto con capacidad de representación simbólica que da origen a la cultura','Más de 2500 cm³ y ausencia de organización social'],
+   c:2,e:'El Homo sapiens posee más de 1300-1400 cm³ de capacidad craneal, capacidad de acción transformadora, organización grupal y representación simbólica, lo que dio origen al mundo de la cultura.'},
+
+  // ── NATURALEZA HUMANA ──
+  {q:'Según el tema, la naturaleza humana se refiere a:',
+   o:['Los hábitos y costumbres aprendidos en sociedad','Los determinantes biológicos heredados, propios de nuestra especie, que tenemos sin necesidad de aprendizaje','La cultura adquirida durante la vida','Las creencias religiosas que cada persona elige'],
+   c:1,e:'La naturaleza humana engloba los factores que heredamos por pertenecer a nuestra especie: el cuerpo, el lenguaje, la sociabilidad y el deseo. Lo natural es aquello que somos sin necesidad de aprendizaje.'},
+
+  {q:'¿Cuál es una de las implicaciones del surgimiento del lenguaje en el ser humano?',
+   o:['La pérdida del pensamiento abstracto y la inteligencia','La autoconciencia y la posibilidad de decir "yo", reflexionando sobre los propios estados de conciencia','El aislamiento social definitivo','La incapacidad de prever el futuro'],
+   c:1,e:'El lenguaje permite la inteligencia abstracta, la posibilidad de decir "no" (libertad), los sentimientos complejos (esperanza, nostalgia) y la autoconciencia (decir "yo").'},
+
+  {q:'Según el filósofo Todorov en "Vida en común", el ser humano experimenta:',
+   o:['Una autosuficiencia plena desde el nacimiento','Una carencia, una incompletud original que solo puede ser llenada en parte por la relación con otros seres humanos','Una independencia absoluta de los demás','Una indiferencia natural hacia los otros'],
+   c:1,e:'Para Todorov, la sociabilidad es constitutiva del ser humano: experimentamos una falta original que solo puede llenarse mediante la cooperación o el conflicto con otros.'},
+
+  {q:'Según R. Girard, el deseo específicamente humano:',
+   o:['Es puramente biológico e instintivo, como en los animales','Se basa en la imitación: deseamos algo por el hecho de que otro lo desea (mimesis)','No tiene ninguna relación con la cultura o el aprendizaje','Es completamente racional y autónomo, sin influencia externa'],
+   c:1,e:'Para Girard, el ser humano imita a los otros en un grado desconocido en otras especies. La imitación extrema lleva al deseo mimético, que es contagioso y puede generar conflictos colectivos.'},
+
+  // ── CULTURA: ETNOCENTRISMO, RELATIVISMO, EXOTISMO, MULTICULTURALISMO ──
+  {q:'El etnocentrismo consiste en:',
+   o:['Aceptar todas las culturas como igualmente válidas, sin crítica alguna','Juzgar las culturas ajenas con criterios culturales propios, considerando la propia como única medida','Idealizar las culturas exóticas y desconocidas','Promover el diálogo intercultural respetuoso'],
+   c:1,e:'El etnocentrismo pone como único criterio nuestras ideas y costumbres para juzgar las demás. Antropólogos como L. H. Morgan y E. B. Taylor fueron etnocentristas, y a veces esconde posturas racistas.'},
+
+  {q:'¿Qué sostiene el relativismo cultural?',
+   o:['Que la cultura occidental es objetivamente superior a las demás','Que hay que aceptar cualquier práctica o costumbre si forma parte de una tradición asentada','Que hay que imponer valores universales a todas las culturas','Que todas las culturas son igualmente inadmisibles'],
+   c:1,e:'El relativismo cultural defiende la tolerancia, pero sus límites residen en la dignidad del ser humano: una práctica ancestral es inadmisible si atenta contra la dignidad. Pensadores como Montaigne o Levi-Strauss representan esta postura.'},
+
+  {q:'¿Qué postura considera que los más elevados valores se encuentran fuera de la propia cultura, en aquellas que nos resultan extrañas y desconocidas (regla de Homero: "el país más alejado de nosotros es el mejor")?',
+   o:['El etnocentrismo','El multiculturalismo','El exotismo','El cosmopolitismo'],
+   c:2,e:'El exotismo, en su forma más extendida (primitivismo), valora lo simple frente a lo complejo y configura el mito del buen salvaje. Utiliza al "otro" como medio para criticar la propia civilización.'},
+
+  {q:'Según el texto, la convivencia de diferentes culturas en el multiculturalismo solo se puede alcanzar con:',
+   o:['La imposición de una cultura dominante sobre las demás','Un Estado de derecho fuerte que garantice las libertades de todos los ciudadanos','La supresión de todas las diferencias culturales','El aislamiento total entre las distintas comunidades'],
+   c:1,e:'Las creencias compatibles con el Estado de derecho deben tolerarse; las incompatibles (fanatismos que menoscaban la libertad o dignidad) deben combatirse con la fuerza de la ley. Los derechos humanos son un límite universal.'},
+
+  // ── PLATÓN ──
+  {q:'Para Platón, en el ser humano existen:',
+   o:['Una sola sustancia: el cuerpo material','Dos principios opuestos: el cuerpo, que nos vincula al mundo sensible, y el alma inmaterial e inmortal, que nos vincula al mundo inteligible','Tres almas materiales independientes','Solo el alma, sin un cuerpo realmente existente'],
+   c:1,e:'Platón defiende un dualismo antropológico radical: el cuerpo arrastra al alma hacia lo material, mientras que el alma, inmaterial e inmortal, pertenece al mundo de las ideas.'},
+
+  {q:'Influido por el orfismo y el pitagorismo, Platón acepta:',
+   o:['La materialidad del alma humana','La teoría de la transmigración de las almas (reencarnación)','La inexistencia de un mundo trascendente','La superioridad del cuerpo sobre el alma'],
+   c:1,e:'Platón sostiene que el alma fue expulsada del mundo de las ideas y vive en el cuerpo "como en una prisión". Si no se purifica, debe transmigrar a un nuevo cuerpo.'},
+
+  // ── ARISTÓTELES ──
+  {q:'Para Aristóteles, a diferencia del dualismo de Platón:',
+   o:['Cuerpo y alma son sustancias completamente separadas','Cuerpo y alma forman una única sustancia, donde el alma es la forma del cuerpo','Solo existe el cuerpo material','El alma es una mera ilusión sin realidad'],
+   c:1,e:'Para Aristóteles, toda realidad se compone de materia y forma. En los seres vivos, la forma se identifica con el alma, formando con el cuerpo una única sustancia.'},
+
+  {q:'Aristóteles distinguió tres tipos de alma. ¿Cuáles son?',
+   o:['Material, espiritual y divina','Vegetativa (alimentación y reproducción), sensitiva (movimiento y percepción) e intelectiva o racional (pensamiento)','Mortal, inmortal y eterna','Pensante, sensible y volitiva'],
+   c:1,e:'El alma vegetativa permite alimentación y reproducción; la sensitiva, movimiento, percepción y deseo; la intelectiva (razón) es la facultad más elevada y exclusiva del ser humano.'},
+
+  {q:'Según Aristóteles, ¿cuál es la comunidad humana natural por excelencia donde el ser humano se realiza como animal social y político?',
+   o:['La familia individual','La polis (ciudad-estado)','El imperio universal','La aldea rural'],
+   c:1,e:'La racionalidad permite dialogar y acordar, lo que convierte al ser humano en animal social y político. La polis es la comunidad natural en la que desarrolla plenamente sus facultades.'},
+
+  // ── EPICURO ──
+  {q:'Para Epicuro, la felicidad consiste en:',
+   o:['La participación activa en la vida política','La ataraxia, esto es, la tranquilidad del ánimo, alcanzada cuando la razón hace desaparecer los miedos','El placer corporal sin límites ni medida','La acumulación de bienes materiales y riquezas'],
+   c:1,e:'Epicuro defiende una filosofía individualista: el mayor obstáculo para la felicidad son los temores nacidos de creencias falsas. Cuando la razón los disipa, se alcanza la ataraxia o tranquilidad del ánimo.'},
+
+  // ── SAN AGUSTÍN ──
+  {q:'Para San Agustín, a diferencia de Platón, el cuerpo es:',
+   o:['Una prisión de la que el alma debe liberarse','Un instrumento que el alma puede utilizar para acercarse a Dios o alejarse de Él','La única realidad existente, sin alma alguna','Un mero accidente sin importancia teológica'],
+   c:1,e:'San Agustín mantiene un dualismo cuerpo-alma, pero el cuerpo no es una prisión (como en Platón), sino un instrumento. El alma, racional e inmortal, posee tres facultades: memoria, inteligencia y voluntad.'},
+
+  // ── SANTO TOMÁS ──
+  {q:'Santo Tomás de Aquino fundamenta su concepción del ser humano en:',
+   o:['Platón','Aristóteles','Epicuro','Descartes'],
+   c:1,e:'Santo Tomás considera al ser humano un ser unitario compuesto de cuerpo y alma, siguiendo a Aristóteles. El libre albedrío es prueba de que el ser humano es también espiritual y no solo material.'},
+
+  // ── RENACIMIENTO ──
+  {q:'El humanismo renacentista (siglos XV-XVI) se caracteriza por:',
+   o:['El teocentrismo medieval reforzado','La recuperación del ideal cultural clásico greco-romano y el antropocentrismo','El rechazo total de la cultura clásica','La negación del valor del ser humano'],
+   c:1,e:'El humanismo recupera el ideal clásico griego y romano, y sitúa al ser humano nuevamente en el centro de interés (antropocentrismo). Pico della Mirandola, Erasmo o Montaigne son algunos de sus representantes.'},
+
+  // ── DESCARTES ──
+  {q:'Para Descartes, el ser humano está formado por dos sustancias de naturaleza distinta:',
+   o:['Mente y emoción, ambas materiales','Res extensa (cuerpo material, cuyo atributo es la extensión) y res cogitans (alma espiritual, "cosa pensante")','Cuerpo y Espíritu Santo divino','Una sola sustancia material idéntica a la de los animales'],
+   c:1,e:'Descartes defiende un dualismo radical: la res extensa (cuerpo) funciona como una máquina, y la res cogitans (alma) es un "yo que piensa". La racionalidad es el fundamento del ser humano.'},
+
+  // ── HUME ──
+  {q:'La célebre afirmación de Hume "la razón es, y ha de ser, tan solo esclava de las pasiones" significa que:',
+   o:['Las emociones son irrelevantes para entender la conducta humana','Las pasiones (aspectos irracionales) juegan un papel positivo e imprescindible al determinar nuestros objetivos','Hay que reprimir por completo todas las emociones humanas','La razón gobierna siempre y sin excepción sobre las pasiones'],
+   c:1,e:'Hume sostiene que las acciones humanas no pueden entenderse sin tener en cuenta las emociones y la dimensión irracional. Las pasiones determinan nuestros fines; la razón es solo un medio para alcanzarlos.'},
+
+  // ── HOBBES, LOCKE, ROUSSEAU ──
+  {q:'Hobbes, Locke y Rousseau coinciden en que el origen de la sociedad humana se explica mediante:',
+   o:['La intervención directa de Dios sobre los individuos','Un pacto que los individuos establecen para superar los problemas del estado de naturaleza','La selección natural biológica','La evolución cultural espontánea sin acuerdos'],
+   c:1,e:'Los tres comparten el esquema contractualista: en el estado de naturaleza surgen problemas (violencia para Hobbes, falta de seguridad para Locke, propiedad privada para Rousseau) que llevan a un pacto que origina el estado civil.'},
+
+  // ── NIETZSCHE ──
+  {q:'¿Qué significa para Nietzsche la afirmación "Dios ha muerto"?',
+   o:['Una declaración estrictamente teológica sobre la divinidad cristiana','Que el hombre occidental toma conciencia de que ha depositado su esperanza en un mundo trascendente que no existe, alcanzando así el nihilismo','Que es necesario volver al cristianismo medieval','Que la ciencia ha demostrado matemáticamente la inexistencia de Dios'],
+   c:1,e:'Nietzsche denuncia el "nihilismo" occidental: buscar la verdad en otro mundo (Platón, cristianismo) lleva a rechazar el único mundo real. Solo el superhombre, capaz de aceptar este mundo cambiante, alcanza un nuevo sentido.'},
+
+  // ── MARX ──
+  {q:'¿Qué entiende Marx por "alienación" en el contexto del trabajo capitalista?',
+   o:['El estado de plenitud creativa que el trabajo proporciona al obrero','El estado en que el trabajador es desposeído de su identidad laboral, queda excluido del proceso creativo y de los beneficios, y es tratado como un objeto cosificado','Una forma natural de organización del trabajo, beneficiosa para todos','El derecho del trabajador a recibir un salario adecuado'],
+   c:1,e:'Para Marx, el obrero capitalista está alienado: no se realiza en el trabajo, su acción es solo un medio, queda excluido del fin, y el producto pasa al capitalista. El trabajo debe pasar de alienante a emancipador.'},
+
+  // ── FREUD ──
+  {q:'La principal aportación de Freud a la concepción del ser humano fue:',
+   o:['Demostrar que el ser humano es exclusivamente racional y consciente','Introducir el concepto de inconsciente: numerosas acciones encuentran su causa en razones ocultas a la conciencia, accesibles mediante el psicoanálisis','Negar toda importancia a las pasiones y los deseos','Afirmar que la infancia no influye en la personalidad adulta'],
+   c:1,e:'Freud descubrió que actos conscientes responden a razones inconscientes. Desarrolló el psicoanálisis (asociación libre) para sacar a la luz traumas reprimidos. También destacó la sexualidad y el papel de la infancia.'},
+
+  // ── SARTRE ──
+  {q:'Para Sartre, la afirmación "el ser humano está condenado a ser libre" significa que:',
+   o:['El ser humano tiene una naturaleza fija y cerrada que le determina por completo','Existir y ser libre es lo mismo: el ser humano no tiene esencia previa, sino que se construye a sí mismo continuamente, lo que genera angustia','La libertad humana es una mera ilusión sin consecuencias','El ser humano puede dejar de ser libre cuando lo desee'],
+   c:1,e:'Para Sartre, a diferencia de las cosas, el ser humano no tiene definición fija: su esencia es existir. "El existencialismo es un humanismo": el hombre primero existe y después se define. La libertad genera angustia.'}
+];
+
+// ═══════════════════════════════════════════════════════════════
+//  FUNCIONES DE ALMACENAMIENTO LOCAL
+// ═══════════════════════════════════════════════════════════════
+function getResults(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]}}
+function saveResult(e){const r=getResults();r.push(e);localStorage.setItem(STORAGE_KEY,JSON.stringify(r))}
+
+// ═══════════════════════════════════════════════════════════════
+//  ESTADO GLOBAL
+// ═══════════════════════════════════════════════════════════════
+let stu = {name:'',email:'',curso:''};
+let qs = [], cur = 0, sc = 0, tp = 0, lg = [];
+const ct = document.getElementById('content');
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+
+// ═══════════════════════════════════════════════════════════════
+//  PANTALLA DE LOGIN
+// ═══════════════════════════════════════════════════════════════
+function showLogin(mode){
+  mode = mode || 'alumno';
+  ct.innerHTML = `
+    <div class="login-screen">
+      <h2>${mode==='alumno'?'Identificación del alumno/a':'Acceso del profesor'}</h2>
+      <p>${mode==='alumno'?'Introduce tus datos para comenzar el examen.':'Introduce la contraseña.'}</p>
+      <div class="login-box">
+        <div class="login-toggle">
+          <button class="toggle-btn ${mode==='alumno'?'active':''}" onclick="showLogin('alumno')">Alumno/a</button>
+          <button class="toggle-btn ${mode==='profesor'?'active':''}" onclick="showLogin('profesor')">Profesor</button>
+        </div>
+        <div id="lf">${mode==='alumno'?studentForm():teacherForm()}</div>
+      </div>
+    </div>`;
+  const f = document.querySelector('#lf input');
+  if(f) setTimeout(()=>f.focus(),80);
+}
+
+function studentForm(){
+  return `
+    <div class="field">
+      <label>Nombre completo</label>
+      <input type="text" id="in" placeholder="Ej: María López García">
+      <div class="error-msg" id="en">Introduce tu nombre completo</div>
+    </div>
+    <div class="field">
+      <label>Correo corporativo</label>
+      <input type="email" id="ie" placeholder="tucorreo@murciaeduca.es">
+      <div class="hint">@murciaeduca.es · @alu.murciaeduca.es · @alu365.murciaeduca.es</div>
+      <div class="error-msg" id="ee">Correo no válido</div>
+    </div>
+    <div class="field">
+      <label>Curso</label>
+      <select id="ic">
+        <option value="">— Selecciona —</option>
+        <option>2º Bach. Ciencias y Tecnología</option>
+        <option>2º Bach. Humanidades y CCSS</option>
+        <option>2º Bach. Artes</option>
+        <option>1º Bachillerato</option>
+        <option>Otro</option>
+      </select>
+      <div class="error-msg" id="ec">Selecciona tu curso</div>
+    </div>
+    <button class="login-btn" onclick="doStudentLogin()">Comenzar el examen →</button>`;
+}
+
+function teacherForm(){
+  return `
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="ip" placeholder="Contraseña" onkeydown="if(event.key==='Enter')doTeacherLogin()">
+      <div class="error-msg" id="ep">Contraseña incorrecta</div>
+    </div>
+    <button class="login-btn" onclick="doTeacherLogin()">Acceder al panel →</button>`;
+}
+
+function doStudentLogin(){
+  const n = document.getElementById('in').value.trim();
+  const e = document.getElementById('ie').value.trim().toLowerCase();
+  const c = document.getElementById('ic').value;
+  let valid = 1;
+  if(!n || n.length < 3){document.getElementById('en').style.display='block';valid=0}
+  else document.getElementById('en').style.display='none';
+  if(!/^[^\s@]+@(alu365\.|alu\.)?murciaeduca\.es$/.test(e)){document.getElementById('ee').style.display='block';valid=0}
+  else document.getElementById('ee').style.display='none';
+  if(!c){document.getElementById('ec').style.display='block';valid=0}
+  else document.getElementById('ec').style.display='none';
+  if(!valid) return;
+  stu = {name:n, email:e, curso:c};
+  qs = shuffle(Q);
+  cur = 0; sc = 0; tp = 0; lg = [];
+  showQuestion();
+}
+
+function doTeacherLogin(){
+  const v = document.getElementById('ip').value;
+  if(v === TEACHER_PASS) showTeacherPanel();
+  else document.getElementById('ep').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  MOSTRAR PREGUNTA
+// ═══════════════════════════════════════════════════════════════
+function showQuestion(){
+  if(cur >= qs.length){finish();return}
+  const q = qs[cur];
+  const pct = (cur/qs.length*100).toFixed(0);
+  // Aleatorizamos el orden de las opciones para evitar memorización por posición
+  const opts = q.o.map((text,i) => ({text, isCorrect: i === q.c}));
+  const shuffled = shuffle(opts);
+  // Guardamos el mapeo en la pregunta actual para poder evaluar
+  qs[cur]._shuffled = shuffled;
+
+  const optsHTML = shuffled.map((o,i) =>
+    `<button class="option-btn" onclick="answer(${i})">
+      <span class="letter">${'ABCD'[i]}</span>
+      <span class="opt-text">${o.text}</span>
+    </button>`
+  ).join('');
+
+  ct.innerHTML = `
+    <div class="student-tag"><span class="dot"></span>${stu.name} · ${stu.curso}</div>
+    <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+    <div class="progress-info">
+      <span>Pregunta ${cur+1} de ${qs.length}</span>
+      <span>${sc} acierto${sc!==1?'s':''}</span>
+    </div>
+    <div class="question-card">
+      <span class="q-type">Pregunta ${cur+1}</span>
+      <div class="q-text">${q.q}</div>
+      <div class="options">${optsHTML}</div>
+      <div id="fb"></div>
+      <button class="next-btn" id="nb" onclick="nextQuestion()">${cur+1 === qs.length ? 'Ver resultados →' : 'Siguiente →'}</button>
+    </div>`;
+}
+
+function answer(idx){
+  const q = qs[cur];
+  const shuffled = q._shuffled;
+  const correctIdx = shuffled.findIndex(o => o.isCorrect);
+  const ok = idx === correctIdx;
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach(b => b.classList.add('disabled'));
+  buttons[correctIdx].classList.add('correct');
+  if(!ok) buttons[idx].classList.add('wrong');
+  tp++;
+  if(ok) sc++;
+  lg.push({
+    q: q.q,
+    ok,
+    given: shuffled[idx].text,
+    correct: shuffled[correctIdx].text,
+    exp: q.e
+  });
+  showFeedback(ok, q.e);
+}
+
+function showFeedback(ok, exp){
+  document.getElementById('fb').innerHTML = `
+    <div class="feedback ${ok?'fb-correct':'fb-wrong'}">
+      <strong>${ok?'✓ ¡Correcto!':'✗ Incorrecto'}</strong>
+      ${exp}
+    </div>`;
+  document.getElementById('nb').style.display = 'block';
+}
+
+function nextQuestion(){cur++;showQuestion()}
+
+// ═══════════════════════════════════════════════════════════════
+//  PANTALLA DE RESULTADOS
+// ═══════════════════════════════════════════════════════════════
+async function finish(){
+  const pct = Math.round(sc/tp*100);
+  const nota = (pct/10).toFixed(1);
+  const now = new Date();
+  const ds = now.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const entry = {name:stu.name, email:stu.email, curso:stu.curso, score:sc, tp, pct, nota:parseFloat(nota), date:ds, log:lg};
+  saveResult(entry);
+
+  let gradeColor = '', gradeLabel = '';
+  if(pct >= 90){gradeColor = 'var(--correct)'; gradeLabel = 'Sobresaliente'}
+  else if(pct >= 70){gradeColor = 'var(--info)'; gradeLabel = 'Notable'}
+  else if(pct >= 50){gradeColor = 'var(--gold)'; gradeLabel = 'Suficiente'}
+  else{gradeColor = 'var(--wrong)'; gradeLabel = 'Necesitas repasar'}
+
+  let review = '';
+  lg.forEach((e,i) => {
+    const cls = e.ok ? 'rev-correct' : 'rev-wrong';
+    const detail = e.ok
+      ? `<span class="ok">✓ ${e.given}</span><span class="exp">${e.exp}</span>`
+      : `<span class="ko">✗ Tu respuesta: ${e.given}</span><br><span class="ok">✓ Correcta: ${e.correct}</span><span class="exp">${e.exp}</span>`;
+    review += `
+      <div class="review-item ${cls}">
+        <div class="rev-q">${i+1}. ${e.q}</div>
+        <div class="rev-detail">${detail}</div>
+      </div>`;
+  });
+
+  ct.innerHTML = `
+    <div class="results">
+      <div class="student-tag"><span class="dot"></span>${stu.name} · ${stu.curso}</div>
+      <h2>Resultados del examen</h2>
+      <div class="score-circle" style="border-color:${gradeColor}">
+        <span class="big" style="color:${gradeColor}">${pct}%</span>
+        <span class="label">de aciertos</span>
+      </div>
+      <p class="results-grade" style="color:${gradeColor}">${gradeLabel}</p>
+      <div class="results-details">
+        <div class="result-stat"><div class="num" style="color:var(--correct)">${sc}</div><div class="lbl">Aciertos</div></div>
+        <div class="result-stat"><div class="num" style="color:var(--wrong)">${tp-sc}</div><div class="lbl">Errores</div></div>
+        <div class="result-stat"><div class="num">${tp}</div><div class="lbl">Total</div></div>
+        <div class="result-stat"><div class="num" style="color:${gradeColor}">${nota}</div><div class="lbl">Nota /10</div></div>
+      </div>
+      <div id="ss" class="sync-status sync-pending">⏳ Enviando resultados al profesor...</div>
+      <br>
+      <button class="restart-btn" onclick="showLogin('alumno')">Volver a empezar</button>
+      <div class="review-section">
+        <h3>Revisión de respuestas</h3>
+        ${review}
+      </div>
+    </div>`;
+
+  const r = await sendToGoogleSheets(entry);
+  const ss = document.getElementById('ss');
+  if(r === 'ok'){ss.className = 'sync-status sync-ok'; ss.textContent = '✓ Resultados enviados al profesor'}
+  else if(r === 'no-url'){ss.className = 'sync-status sync-pending'; ss.textContent = 'ℹ Guardado local (Google Sheets no configurado)'}
+  else{ss.className = 'sync-status sync-fail'; ss.textContent = '⚠ Error de envío. Guardado localmente.'}
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  PANEL DEL PROFESOR
+// ═══════════════════════════════════════════════════════════════
+function showTeacherPanel(){
+  const res = getResults().sort((a,b) => b.nota - a.nota || a.name.localeCompare(b.name));
+  let rows = '';
+  res.forEach((r,i) => {
+    let posClass = '';
+    if(i === 0) posClass = 'rank-gold';
+    else if(i === 1) posClass = 'rank-silver';
+    else if(i === 2) posClass = 'rank-bronze';
+    rows += `
+      <tr>
+        <td class="rank-pos ${posClass}">${i+1}</td>
+        <td><strong>${r.name}</strong></td>
+        <td>${r.curso}</td>
+        <td>${r.email}</td>
+        <td class="rank-score">${r.nota}/10</td>
+        <td>${r.score}/${r.tp}</td>
+        <td>${r.pct}%</td>
+        <td>${r.date}</td>
+      </tr>`;
+  });
+  if(!res.length) rows = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin resultados locales todavía.<br>Los resultados centralizados están en tu Google Sheets.</td></tr>`;
+
+  ct.innerHTML = `
+    <div class="ranking-section">
+      <h3>Panel del profesor</h3>
+      <p class="panel-sub">Datos guardados localmente. Los centralizados están en tu <strong>Google Sheets</strong>.</p>
+      <div class="ranking-table-wrap">
+        <table class="ranking-table">
+          <thead>
+            <tr>
+              <th>#</th><th>Alumno/a</th><th>Curso</th><th>Correo</th>
+              <th>Nota</th><th>Aciertos</th><th>%</th><th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      ${res.length ? `
+        <div style="text-align:center">
+          <button class="excel-btn" onclick="downloadExcel()">📊 Descargar Excel</button>
+          <button class="excel-btn" onclick="if(confirm('¿Borrar todos los datos locales? Esta acción no se puede deshacer.')){localStorage.removeItem(STORAGE_KEY);showTeacherPanel()}" style="border-color:var(--wrong);color:var(--wrong);margin-left:.5rem">🗑 Borrar datos</button>
+        </div>` : ''
+      }
+      <div style="text-align:center;margin-top:1.2rem">
+        <button class="restart-btn" onclick="showLogin('alumno')">← Volver al login</button>
+      </div>
+    </div>`;
+}
+
+function downloadExcel(){
+  const res = getResults().sort((a,b) => b.nota - a.nota);
+  const data = [
+    ['RESULTADOS EXAMEN ANTROPOLOGÍA — Tema 5 — IES Alquipir'],
+    [''],
+    ['#','Alumno/a','Curso','Correo','Nota','Aciertos','Total','%','Fecha']
+  ];
+  res.forEach((r,i) => data.push([i+1, r.name, r.curso, r.email, r.nota, r.score, r.tp, r.pct+'%', r.date]));
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols'] = [{wch:5},{wch:28},{wch:30},{wch:32},{wch:6},{wch:9},{wch:6},{wch:6},{wch:18}];
+  ws['!merges'] = [{s:{r:0,c:0}, e:{r:0,c:8}}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Resultados');
+  XLSX.writeFile(wb, 'Resultados_Antropologia_T5.xlsx');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ENVÍO A GOOGLE SHEETS (Apps Script)
+// ═══════════════════════════════════════════════════════════════
+async function sendToGoogleSheets(entry){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PEGA_AQUI')) return 'no-url';
+  try{
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify({
+        fecha: entry.date,
+        nombre: entry.name,
+        curso: entry.curso,
+        correo: entry.email,
+        nota: entry.nota,
+        aciertos: entry.score,
+        total: entry.tp,
+        porcentaje: entry.pct
+      })
+    });
+    return 'ok';
+  }catch{return 'error'}
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ARRANQUE
+// ═══════════════════════════════════════════════════════════════
+showLogin('alumno');
+</script>
+</body>
+</html>
